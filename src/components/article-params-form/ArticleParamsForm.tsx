@@ -3,6 +3,7 @@ import { Button } from 'src/ui/button';
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
 import { ReactNode, useEffect, useRef, useState } from 'react';
+import { Text } from 'src/ui/text';
 
 type TForms = {
 	applyStyles: (event: any) => void;
@@ -45,6 +46,9 @@ export const ArticleParamsForm = (props: TForms) => {
 						[styles.container_open]: asideOpen,
 					})}>
 					<form className={styles.form} onSubmit={props.applyStyles}>
+						<Text size={31} weight={800} uppercase={true}>
+							Задайте параметры
+						</Text>
 						{props.children}
 						<div className={styles.bottomContainer}>
 							<Button
