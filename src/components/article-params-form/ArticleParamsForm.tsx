@@ -2,12 +2,13 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
-
-import { useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Text } from 'src/ui/text';
 import {
+	ArticleStateType,
 	backgroundColors,
 	contentWidthArr,
+	defaultArticleState,
 	fontColors,
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -17,22 +18,18 @@ import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
 import { RadioGroup } from 'src/ui/radio-group';
 type TForms = {
-	applyStyles: (event: any) => void;
-	reset: () => void;
-	fonts: OptionType;
-	changeFont: (option: OptionType) => void;
-	fontSize: OptionType;
-	changeSize: (option: OptionType) => void;
-	changeFontColor: (option: OptionType) => void;
-	fontColor: OptionType;
-	changeBackColor: (option: OptionType) => void;
-	backColor: OptionType;
-	changeWidth: (option: OptionType) => void;
-	width: OptionType;
+	setStyle: (properties: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm = (props: TForms) => {
 	const [asideOpen, setAsideOpen] = useState(false);
+	const [fonts, setFonts] = useState(defaultArticleState.fontFamilyOption);
+	const [fontColor, setFontColor] = useState(defaultArticleState.fontColor);
+	const [backColor, setBackColor] = useState(
+		defaultArticleState.backgroundColor
+	);
+	const [width, setWidth] = useState(defaultArticleState.contentWidth);
+	const [fontSize, setfontSize] = useState(defaultArticleState.fontSizeOption);
 	const aside = useRef<HTMLElement>(null);
 
 	function clickOutside(e: MouseEvent) {
@@ -43,6 +40,47 @@ export const ArticleParamsForm = (props: TForms) => {
 		) {
 			setAsideOpen(false);
 		}
+	}
+
+	function changeFont(option: OptionType) {
+		setFonts(option);
+	}
+	function changeFontColor(option: OptionType) {
+		setFontColor(option);
+	}
+	function changeBackColor(option: OptionType) {
+		setBackColor(option);
+	}
+	function changeWidth(option: OptionType) {
+		setWidth(option);
+	}
+	function changeSize(option: OptionType) {
+		setfontSize(option);
+	}
+	const applyStyles = (event: FormEvent) => {
+		event.preventDefault();
+		props.setStyle({
+			fontFamilyOption: fonts,
+			fontColor: fontColor,
+			backgroundColor: backColor,
+			contentWidth: width,
+			fontSizeOption: fontSize,
+		});
+	};
+
+	function reset() {
+		props.setStyle({
+			fontFamilyOption: defaultArticleState.fontFamilyOption,
+			fontColor: defaultArticleState.fontColor,
+			backgroundColor: defaultArticleState.backgroundColor,
+			contentWidth: defaultArticleState.contentWidth,
+			fontSizeOption: defaultArticleState.fontSizeOption,
+		});
+		setFonts(defaultArticleState.fontFamilyOption);
+		setfontSize(defaultArticleState.fontSizeOption);
+		setFontColor(defaultArticleState.fontColor);
+		setWidth(defaultArticleState.contentWidth);
+		setBackColor(defaultArticleState.backgroundColor);
 	}
 
 	useEffect(() => {
@@ -66,44 +104,41 @@ export const ArticleParamsForm = (props: TForms) => {
 			<aside
 				ref={aside}
 				className={clsx(styles.container, asideOpen && styles.container_open)}>
-				<form
-					className={styles.form}
-					onSubmit={props.applyStyles}
-					onReset={props.reset}>
+				<form className={styles.form} onSubmit={applyStyles} onReset={reset}>
 					<Text size={31} weight={800} uppercase={true}>
 						Задайте параметры
 					</Text>
 					<Select
 						title='Шрифт'
-						onChange={props.changeFont}
+						onChange={changeFont}
 						options={fontFamilyOptions}
-						selected={props.fonts}
+						selected={fonts}
 					/>
 					<RadioGroup
 						name='Размер шрифта'
 						options={fontSizeOptions}
-						selected={props.fontSize}
+						selected={fontSize}
 						title='Размер шрифта'
-						onChange={props.changeSize}
+						onChange={changeSize}
 					/>
 					<Select
 						title='Цвет шрифта'
-						onChange={props.changeFontColor}
+						onChange={changeFontColor}
 						options={fontColors}
-						selected={props.fontColor}
+						selected={fontColor}
 					/>
 					<Separator />
 					<Select
 						title='Цвет фона'
-						onChange={props.changeBackColor}
+						onChange={changeBackColor}
 						options={backgroundColors}
-						selected={props.backColor}
+						selected={backColor}
 					/>
 					<Select
 						title='Ширина контента'
-						onChange={props.changeWidth}
+						onChange={changeWidth}
 						options={contentWidthArr}
-						selected={props.width}
+						selected={width}
 					/>
 					<div className={styles.bottomContainer}>
 						<Button title='Сбросить' htmlType='reset' type='clear' />
